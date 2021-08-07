@@ -1,4 +1,30 @@
+# Modified for Tuxedo Stellaris 15
+
+### 1. Keyboard Lights
+
+This repo after this section covers keyboard lights for the specified laptop.
+
+### 2. Lightbar
+
+Assuming that https://github.com/tuxedocomputers/tuxedo-keyboard is installed.
+
+Lightbar (in front of the laptop) can be controlled here:
+
+```
+/sys/devices/platform/tuxedo_keyboard/leds/
+```
+
+For example; (Colorful animation, slow)
+
+```
+sudo -i
+echo 1 > /sys/devices/platform/tuxedo_keyboard/leds/lightbar_animation::status/brightness
+```
+
+
+
 # What is it?
+
 `ite8291r3-ctl` is a userspace driver for the ITE 8291 (rev 0.03) RGB keyboard backlight controller.
 
 
@@ -21,12 +47,24 @@ If you believen your device should be supported, but it is not, please open an i
 
 # Dependencies
 ### Required
+
+- `Ubuntu 20.04` (tested and works)
+
 * [`Python 3.6`](https://python.org) or above
 * [`pyusb`](https://github.com/pyusb/pyusb) *(and thus one of the backend that it supports, e.g. [`libusb`](https://libusb.info))*
+
+```
+pip install pyusb
+```
+
 ### Optional
 #### for the `screen` mode
 * [`python-xlib`](https://pypi.org/project/python-xlib) Python package
 * [`Pillow`](https://pypi.org/project/Pillow) Python package
+
+```
+pip install python-xlib Pillow
+```
 
 
 # Features
@@ -36,7 +74,7 @@ If you believen your device should be supported, but it is not, please open an i
 * Color palette management
 * Per-key RGB colors
 * Animations
-* Coloring the keyboard according to what is on screen **[exprimental, Linux+Xorg only]**
+* Coloring the keyboard according to what is on screen **[experimental, Linux+Xorg only]**
 * Querying parts of the controller state
 
 ## TO-DO
@@ -56,9 +94,20 @@ pip install ite8291r3-ctl
 
 *Note:* This will not download anything from the `assets` directory, it only installs the program. You will have to download them manually if you want to try them out.
 
-*Note:* If you want to install for all users, run `pip` as root.
+*Note:* ~~If you want to install for all users, run `pip` as root.~~  See the **Accessing the USB device** section instead!
 
 ## Manually
+
+```
+sudo apt install python-is-python3
+```
+
+Add this line to `.bashrc` for sourcing pip executables:
+
+```
+export PATH=$PATH:$HOME/.local/bin
+```
+
 ### Downloading
 If you have `git` installed:
 ```
@@ -81,11 +130,13 @@ By default you need *root* privileges if you want to use this utility. As noted 
 If you want to do that, create a file `/etc/udev/rules.d/99-ite8291.rules`:
 ```
 SUBSYSTEMS=="usb", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="ce00", MODE:="0666"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="6004", MODE:="0666"
 ```
 
 or you can make it accessible only for a given group if you don't want anyone to have access to it:
 ```
 SUBSYSTEMS=="usb", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="ce00", GROUP="name_of_the_group", MODE:="0660"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="6004", GROUP="name_of_the_group", MODE:="0660"
 ```
 
 after creating the file, run `sudo udevadm control --reload`, then `sudo udevadm trigger`. Or reboot.
